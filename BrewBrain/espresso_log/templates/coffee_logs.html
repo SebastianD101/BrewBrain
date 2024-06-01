@@ -19,6 +19,14 @@
         background-color: #5f4536;  /* slightly lighter coffee brown */
         color: #f5f0e1;  /* creamy color */
     }
+    .btn-delete {
+        background-color: #d9534f;  /* Bootstrap's danger color */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-delete:hover {
+        background-color: #c9302c;  /* slightly lighter danger color */
+        color: #f5f0e1;  /* creamy color */
+    }
     @media (max-width: 768px) {
         .table-responsive {
             border: 0;
@@ -53,89 +61,197 @@
 <div class="container mt-5">
     <h2>Espresso Logs</h2>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-row">
-            <div class="form-group col-md-3">
-                <input type="text" class="form-control" name="bean_name" placeholder="Bean Name">
-            </div>
-            <div class="form-group col-md-2">
-                <select class="form-control" name="roast_level">
-                    <option value="Light">Light</option>
-                    <option value="Light-Medium">Light-Medium</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Medium-Dark">Medium-Dark</option>
-                    <option value="Dark">Dark</option>
-                </select>
-            </div>
-            <div class="form-group col-md-1">
-                <input type="number" class="form-control" name="dose" placeholder="Dose (g)">
-            </div>
-            <div class="form-group col-md-1">
-                <input type="number" class="form-control" name="yield_amt" placeholder="Yield (g)">
-            </div>
-            <div class="form-group col-md-2">
-                <input type="number" class="form-control" name="extraction_time" placeholder="Extraction Time (s)">
-            </div>
-            <div class="form-group col-md-2">
-                <input type="number" class="form-control" name="water_temperature" placeholder="Water Temp (°C)">
-            </div>
-            <div class="form-group col-md-1">
-                <input type="number" class="form-control" name="sourness_bitterness" placeholder="S/B">
-            </div>
-            <div class="form-group col-md-1">
-                <input type="number" class="form-control" name="strength" placeholder="Strength">
-            </div>
+    <div class="form-row">
+        <div class="form-group col-md-2">
+            <input type="text" class="form-control" id="beanName" placeholder="Bean Name">
         </div>
-        <button type="submit" name="add" class="btn btn-coffee mt-4 mb-4">Add Log</button>
-    </form>
+        <div class="form-group col-md-2">
+            <select class="form-control" id="roastLevel">
+                <option value="Light">Light</option>
+                <option value="Light-Medium">Light-Medium</option>
+                <option value="Medium">Medium</option>
+                <option value="Medium-Dark">Medium-Dark</option>
+                <option value="Dark">Dark</option>
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <input type="date" class="form-control" id="date">
+        </div>
+        <div class="form-group col-md-1">
+            <input type="number" class="form-control" id="dose" placeholder="Dose (g)">
+        </div>
+        <div class="form-group col-md-1">
+            <input type="number" class="form-control" id="yieldAmt" placeholder="Yield (g)">
+        </div>
+        <div class="form-group col-md-1">
+            <input type="number" class="form-control" id="extractionTime" placeholder="Extraction Time (s)">
+        </div>
+        <div class="form-group col-md-1">
+            <input type="number" class="form-control" id="waterTemp" placeholder="Water Temp (°C)">
+        </div>
+        <div class="form-group col-md-1">
+            <select class="form-control" id="sournessBitterness">
+                <option selected="true" disabled="disabled">Sourness/Bitterness </option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <div class="form-group col-md-1">
+            <select class="form-control" id="strength">
+                <option selected="true" disabled="disabled">Strength </option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+    </div>
+    <button id="addLog" class="btn btn-coffee mt-4 mb-4">Add Log</button>
+    <button id="clearTable" class="btn btn-danger mt-4 mb-4">Clear Table</button>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-            <input type="file" class="form-control-file" name="file">
-        </div>
-        <button type="submit" name="upload" class="btn btn-coffee mt-4 mb-4">Upload CSV</button>
-    </form>
+    <input type="file" id="csvFileInput" class="form-control-file">
+    <button id="uploadCsv" class="btn btn-coffee mt-4 mb-4">Upload CSV</button>
 
     <div class="table-responsive">
-        <table class="table table-hover mt-4">
+        <h3 id="tableTitle">No Bean Name - No Roast Level</h3>
+        <table class="table table-hover mt-4" id="logsTable">
             <thead>
                 <tr>
-                    <th>Bean Name</th>
-                    <th>Roast Level</th>
+                    <th>Date</th>
                     <th>Dose (g)</th>
                     <th>Yield (g)</th>
                     <th>Extraction Time (s)</th>
                     <th>Water Temp (°C)</th>
                     <th>Sourness/Bitterness</th>
                     <th>Strength</th>
+                    <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for log in logs %}
-                <tr>
-                    <td data-label="Bean Name">{{ log.bean_name }}</td>
-                    <td data-label="Roast Level">{{ log.roast_level }}</td>
-                    <td data-label="Dose (g)">{{ log.dose }}</td>
-                    <td data-label="Yield (g)">{{ log.yield_amt }}</td>
-                    <td data-label="Extraction Time (s)">{{ log.extraction_time }}</td>
-                    <td data-label="Water Temp (°C)">{{ log.water_temperature }}</td>
-                    <td data-label="Sourness/Bitterness">{{ log.sourness_bitterness }}</td>
-                    <td data-label="Strength">{{ log.strength }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="8">No coffee logs found.</td>
-                </tr>
-                {% endfor %}
+            <tbody id="logsTableBody">
             </tbody>
         </table>
     </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" name="export" class="btn btn-coffee mt-4 mb-4">Export to CSV</button>
-    </form>
+    <button id="exportCsv" class="btn btn-coffee mt-4 mb-4">Export CSV</button>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const addLogButton = document.getElementById("addLog");
+        const clearTableButton = document.getElementById("clearTable");
+        const logsTableBody = document.getElementById("logsTableBody");
+        const csvFileInput = document.getElementById("csvFileInput");
+        const uploadCsvButton = document.getElementById("uploadCsv");
+        const exportCsvButton = document.getElementById("exportCsv");
+        const tableTitle = document.getElementById("tableTitle");
+
+        addLogButton.addEventListener("click", function() {
+            const beanName = document.getElementById("beanName").value;
+            const roastLevel = document.getElementById("roastLevel").value;
+            const date = document.getElementById("date").value;
+            const dose = document.getElementById("dose").value;
+            const yieldAmt = document.getElementById("yieldAmt").value;
+            const extractionTime = document.getElementById("extractionTime").value;
+            const waterTemp = document.getElementById("waterTemp").value;
+            const sournessBitterness = document.getElementById("sournessBitterness").value;
+            const strength = document.getElementById("strength").value;
+
+            // Validate date
+            if (!date) {
+                alert("Please enter a valid date.");
+                return;
+            }
+
+            tableTitle.textContent = `${beanName} - ${roastLevel}`;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${date}</td>
+                <td>${dose}</td>
+                <td>${yieldAmt}</td>
+                <td>${extractionTime}</td>
+                <td>${waterTemp}</td>
+                <td>${sournessBitterness}</td>
+                <td>${strength}</td>
+                <td><button class="btn btn-delete btn-sm">Delete</button></td>
+            `;
+            logsTableBody.appendChild(row);
+
+            const deleteButton = row.querySelector(".btn-delete");
+            deleteButton.addEventListener("click", function() {
+                row.remove();
+            });
+        });
+
+        clearTableButton.addEventListener("click", function() {
+            logsTableBody.innerHTML = "";
+            tableTitle.textContent = "No Bean Name - No Roast Level";
+        });
+
+        uploadCsvButton.addEventListener("click", function() {
+            const file = csvFileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const rows = text.split("\n").slice(3);
+                    rows.forEach(row => {
+                        const cols = row.split(",");
+                        if (cols.length === 7) {
+                            const newRow = document.createElement("tr");
+                            newRow.innerHTML = `
+                                <td>${cols[0]}</td>
+                                <td>${cols[1]}</td>
+                                <td>${cols[2]}</td>
+                                <td>${cols[3]}</td>
+                                <td>${cols[4]}</td>
+                                <td>${cols[5]}</td>
+                                <td>${cols[6]}</td>
+                                <td><button class="btn btn-delete btn-sm">Delete</button></td>
+                            `;
+                            logsTableBody.appendChild(newRow);
+
+                            const deleteButton = newRow.querySelector(".btn-delete");
+                            deleteButton.addEventListener("click", function() {
+                                newRow.remove();
+                            });
+
+                            // Update table title
+                            if (tableTitle.textContent === "No Bean Name - No Roast Level") {
+                                const firstNonEmptyRow = text.split("\n")[0];
+                                const [beanName, roastLevel] = firstNonEmptyRow.split(",");
+                                tableTitle.textContent = `${beanName} - ${roastLevel}`;
+                            }
+                        }
+                    });
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        exportCsvButton.addEventListener("click", function() {
+            const rows = logsTableBody.querySelectorAll("tr");
+            const csvContent = [
+                `Bean Name,${tableTitle.textContent.split(" - ")[0]}`,
+                `Roast,${tableTitle.textContent.split(" - ")[1]}`,
+                ``,
+                ...Array.from(rows).map(row => 
+                    Array.from(row.cells).slice(0, 7).map(cell => cell.textContent).join(",")
+                )
+            ].join("\n");
+
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `brew_brain_for_${tableTitle.textContent.replace(" - ", "_")}_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+</script>
 {% endblock %}
