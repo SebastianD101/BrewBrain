@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f5f0e1;  /* creamy color */
+    }
+    .table {
+        color: #4b3621;  /* dark coffee brown */
+    }
+    .table-hover tbody tr:hover {
+        background-color: #e4d4b7;  /* light coffee brown */
+    }
+    .btn-coffee {
+        background-color: #4b3621;  /* dark coffee brown */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-coffee:hover {
+        background-color: #5f4536;  /* slightly lighter coffee brown */
+        color: #f5f0e1;  /* creamy color */
+    }
+    @media (max-width: 768px) {
+        .table-responsive {
+            border: 0;
+        }
+        .table thead {
+            display: none; /* Hide the header on small screens */
+        }
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+        .table tr {
+            margin-bottom: 15px;
+        }
+        .table td {
+            text-align: right;
+            position: relative;
+            padding-left: 50%;
+        }
+        .table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            width: 50%;
+            padding-left: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+    }
+</style>
+
+<div class="container mt-5">
+    <h2>Espresso Logs</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <input type="text" class="form-control" name="bean_name" placeholder="Bean Name">
+            </div>
+            <div class="form-group col-md-2">
+                <select class="form-control" name="roast_level">
+                    <option value="Light">Light</option>
+                    <option value="Light-Medium">Light-Medium</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Medium-Dark">Medium-Dark</option>
+                    <option value="Dark">Dark</option>
+                </select>
+            </div>
+            <div class="form-group col-md-1">
+                <input type="number" class="form-control" name="dose" placeholder="Dose (g)">
+            </div>
+            <div class="form-group col-md-1">
+                <input type="number" class="form-control" name="yield_amt" placeholder="Yield (g)">
+            </div>
+            <div class="form-group col-md-2">
+                <input type="number" class="form-control" name="extraction_time" placeholder="Extraction Time (s)">
+            </div>
+            <div class="form-group col-md-2">
+                <input type="number" class="form-control" name="water_temperature" placeholder="Water Temp (°C)">
+            </div>
+            <div class="form-group col-md-1">
+                <input type="number" class="form-control" name="sourness_bitterness" placeholder="S/B">
+            </div>
+            <div class="form-group col-md-1">
+                <input type="number" class="form-control" name="strength" placeholder="Strength">
+            </div>
+        </div>
+        <button type="submit" name="add" class="btn btn-coffee mt-4 mb-4">Add Log</button>
+    </form>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="file" class="form-control-file" name="file">
+        </div>
+        <button type="submit" name="upload" class="btn btn-coffee mt-4 mb-4">Upload CSV</button>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>Bean Name</th>
+                    <th>Roast Level</th>
+                    <th>Dose (g)</th>
+                    <th>Yield (g)</th>
+                    <th>Extraction Time (s)</th>
+                    <th>Water Temp (°C)</th>
+                    <th>Sourness/Bitterness</th>
+                    <th>Strength</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td data-label="Bean Name">{{ log.bean_name }}</td>
+                    <td data-label="Roast Level">{{ log.roast_level }}</td>
+                    <td data-label="Dose (g)">{{ log.dose }}</td>
+                    <td data-label="Yield (g)">{{ log.yield_amt }}</td>
+                    <td data-label="Extraction Time (s)">{{ log.extraction_time }}</td>
+                    <td data-label="Water Temp (°C)">{{ log.water_temperature }}</td>
+                    <td data-label="Sourness/Bitterness">{{ log.sourness_bitterness }}</td>
+                    <td data-label="Strength">{{ log.strength }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No coffee logs found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="export" class="btn btn-coffee mt-4 mb-4">Export to CSV</button>
+    </form>
+</div>
+{% endblock %}
