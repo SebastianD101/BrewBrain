@@ -60,68 +60,13 @@
 
 <div class="container mt-5">
     <h2>Espresso Logs</h2>
-
-    <div class="form-row">
-        <div class="form-group col-md-2">
-            <input type="text" class="form-control" id="beanName" placeholder="Bean Name">
-        </div>
-        <div class="form-group col-md-2">
-            <select class="form-control" id="roastLevel">
-                <option value="Light">Light</option>
-                <option value="Light-Medium">Light-Medium</option>
-                <option value="Medium">Medium</option>
-                <option value="Medium-Dark">Medium-Dark</option>
-                <option value="Dark">Dark</option>
-            </select>
-        </div>
-        <div class="form-group col-md-2">
-            <input type="date" class="form-control" id="date">
-        </div>
-        <div class="form-group col-md-1">
-            <input type="number" class="form-control" id="dose" placeholder="Dose (g)">
-        </div>
-        <div class="form-group col-md-1">
-            <input type="number" class="form-control" id="yieldAmt" placeholder="Yield (g)">
-        </div>
-        <div class="form-group col-md-1">
-            <input type="number" class="form-control" id="extractionTime" placeholder="Extraction Time (s)">
-        </div>
-        <div class="form-group col-md-1">
-            <input type="number" class="form-control" id="waterTemp" placeholder="Water Temp (°C)">
-        </div>
-        <div class="form-group col-md-1">
-            <select class="form-control" id="sournessBitterness">
-                <option selected="true" disabled="disabled">Sourness/Bitterness </option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-        </div>
-        <div class="form-group col-md-1">
-            <select class="form-control" id="strength">
-                <option selected="true" disabled="disabled">Strength </option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-        </div>
-    </div>
-    <button id="addLog" class="btn btn-coffee mt-4 mb-4">Add Log</button>
-    <button id="clearTable" class="btn btn-danger mt-4 mb-4">Clear Table</button>
-
-    <input type="file" id="csvFileInput" class="form-control-file">
-    <button id="uploadCsv" class="btn btn-coffee mt-4 mb-4">Upload CSV</button>
-
     <div class="table-responsive">
-        <h3 id="tableTitle">No Bean Name - No Roast Level</h3>
+        <h5 id="tableTitle"></h5>
         <table class="table table-hover mt-4" id="logsTable">
             <thead>
                 <tr>
                     <th>Date</th>
+                    <th>Grind Size</th>
                     <th>Dose (g)</th>
                     <th>Yield (g)</th>
                     <th>Extraction Time (s)</th>
@@ -137,6 +82,67 @@
     </div>
 
     <button id="exportCsv" class="btn btn-coffee mt-4 mb-4">Export CSV</button>
+    <button id="clearTable" class="btn btn-danger mt-4 mb-4">Clear Table</button>
+
+    <h3>Manual Entry</h3><br>
+    <div class="form-row">
+        <div class="form-group col-md-2">
+            <input type="text" class="form-control" id="beanName" placeholder="Bean Name">
+        </div>
+        <div class="form-group col-md-2">
+            <select class="form-control" id="roastLevel">
+                <option selected="true" disabled="disabled" value="N/A">Roast Level </option>
+                <option value="Light" style="background-color: #5c3735; color: #f5f0e1;">Light</option>
+                <option value="Light-Medium" style="background-color: #52312f; color: #f5f0e1;">Light-Medium</option>
+                <option value="Medium" style="background-color: #482b29; color: #f5f0e1;">Medium</option>
+                <option value="Medium-Dark" style="background-color: #3d2523; color: #f5f0e1;">Medium-Dark</option>
+                <option value="Dark" style="background-color: #331e1d; color: #f5f0e1;">Dark</option>
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <input type="date" class="form-control" id="date">
+        </div>
+        <div class="form-group col-md-2">
+            <input type="number" class="form-control" id="grindSize" placeholder="Grind Size">
+        </div>
+        <div class="form-group col-md-2">
+            <input type="number" class="form-control" id="dose" placeholder="Dose (g)">
+        </div>
+        <div class="form-group col-md-2">
+            <input type="number" class="form-control" id="yieldAmt" placeholder="Yield (g)">
+        </div>
+        <div class="form-group col-md-2">
+            <input type="number" class="form-control" id="extractionTime" placeholder="Extraction Time (s)">
+        </div>
+        <div class="form-group col-md-2">
+            <input type="number" class="form-control" id="waterTemp" placeholder="Water Temp (°C)">
+        </div>
+        <div class="form-group col-md-2">
+            <select class="form-control" id="sournessBitterness">
+                <option selected="true" disabled="disabled" value="N/A">Sourness/Bitterness </option>
+                <option value="1">1 (Sour)</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5 (Bitter)</option>
+            </select>
+        </div>
+        <div class="form-group col-md-2">
+            <select class="form-control" id="strength">
+                <option selected="true" disabled="disabled" value="N/A">Strength </option>
+                <option value="1">1 (Weak)</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5 (Strong)</option>
+            </select>
+        </div>
+    </div>
+    <button id="addLog" class="btn btn-coffee mt-4 mb-4">Add Log</button><br>
+
+    <h3>CSV Import</h3><br>
+    <input type="file" id="csvFileInput" class="form-control-file">
+    <button id="uploadCsv" class="btn btn-coffee mt-4 mb-4">Upload CSV</button>
 </div>
 
 <script>
@@ -153,6 +159,7 @@
             const beanName = document.getElementById("beanName").value;
             const roastLevel = document.getElementById("roastLevel").value;
             const date = document.getElementById("date").value;
+            const grindSize = document.getElementById("grindSize").value;
             const dose = document.getElementById("dose").value;
             const yieldAmt = document.getElementById("yieldAmt").value;
             const extractionTime = document.getElementById("extractionTime").value;
@@ -160,18 +167,16 @@
             const sournessBitterness = document.getElementById("sournessBitterness").value;
             const strength = document.getElementById("strength").value;
 
-            // Validate date
-            if (!date) {
-                alert("Please enter a valid date.");
-                return;
-            }
-
             tableTitle.textContent = `${beanName} - ${roastLevel}`;
+            if (beanName == "") {
+                tableTitle.textContent = "";
+            }
 
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${date}</td>
                 <td>${dose}</td>
+                <td>${grindSize}</td>
                 <td>${yieldAmt}</td>
                 <td>${extractionTime}</td>
                 <td>${waterTemp}</td>
@@ -189,7 +194,7 @@
 
         clearTableButton.addEventListener("click", function() {
             logsTableBody.innerHTML = "";
-            tableTitle.textContent = "No Bean Name - No Roast Level";
+            tableTitle.textContent = "";
         });
 
         uploadCsvButton.addEventListener("click", function() {
@@ -198,10 +203,10 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const text = e.target.result;
-                    const rows = text.split("\n").slice(3);
+                    const rows = text.split("\n").slice(4);
                     rows.forEach(row => {
                         const cols = row.split(",");
-                        if (cols.length === 7) {
+                        if (cols.length === 8) {
                             const newRow = document.createElement("tr");
                             newRow.innerHTML = `
                                 <td>${cols[0]}</td>
@@ -211,6 +216,7 @@
                                 <td>${cols[4]}</td>
                                 <td>${cols[5]}</td>
                                 <td>${cols[6]}</td>
+                                <td>${cols[7]}</td>
                                 <td><button class="btn btn-delete btn-sm">Delete</button></td>
                             `;
                             logsTableBody.appendChild(newRow);
@@ -221,7 +227,7 @@
                             });
 
                             // Update table title
-                            if (tableTitle.textContent === "No Bean Name - No Roast Level") {
+                            if (tableTitle.textContent === "") {
                                 const firstNonEmptyRow = text.split("\n")[0];
                                 const [beanName, roastLevel] = firstNonEmptyRow.split(",");
                                 tableTitle.textContent = `${beanName} - ${roastLevel}`;
@@ -239,8 +245,9 @@
                 `Bean Name,${tableTitle.textContent.split(" - ")[0]}`,
                 `Roast,${tableTitle.textContent.split(" - ")[1]}`,
                 ``,
+                `Date,Dose (g),Grind Size,Yield (g),Extraction Time (s),Water Temp,Sourness/Bitterness,Strength`,
                 ...Array.from(rows).map(row => 
-                    Array.from(row.cells).slice(0, 7).map(cell => cell.textContent).join(",")
+                    Array.from(row.cells).slice(0, 8).map(cell => cell.textContent).join(",")
                 )
             ].join("\n");
 

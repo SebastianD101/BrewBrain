@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f5f0e1;  /* creamy color */
+    }
+    .table {
+        color: #4b3621;  /* dark coffee brown */
+    }
+    .table-hover tbody tr:hover {
+        background-color: #e4d4b7;  /* light coffee brown */
+    }
+    .btn-coffee {
+        background-color: #4b3621;  /* dark coffee brown */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-coffee:hover {
+        background-color: #5f4536;  /* slightly lighter coffee brown */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-delete {
+        background-color: #d9534f;  /* Bootstrap's danger color */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-delete:hover {
+        background-color: #c9302c;  /* slightly lighter danger color */
+        color: #f5f0e1;  /* creamy color */
+    }
+    @media (max-width: 768px) {
+        .table-responsive {
+            border: 0;
+        }
+        .table thead {
+            display: none; /* Hide the header on small screens */
+        }
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+        .table tr {
+            margin-bottom: 15px;
+        }
+        .table td {
+            text-align: right;
+            position: relative;
+            padding-left: 50%;
+        }
+        .table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            width: 50%;
+            padding-left: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+    }
+</style>
+<div class="container mt-5">
+    <h2>Machine Learning Prediction</h2>
+    
+    <h3>Upload CSV to Train Model</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="csvFileInput" class="form-control-file" name="csvFile">
+        <button type="button" id="uploadCsv" class="btn btn-coffee mt-4 mb-4">Upload CSV</button>
+    </form>
+
+    <div id="trainMessage"></div>
+
+    <h3>Input Espresso Recipe for Prediction</h3>
+    <form id="predictForm" method="post" action="{% url 'predict' %}">
+        {% csrf_token %}
+        <label for="dose">Dose (g):</label>
+        <input type="text" id="dose" name="dose" required><br>
+    
+        <label for="grind_size">Grind Size:</label>
+        <input type="text" id="grind_size" name="grind_size" required><br>
+    
+        <label for="extraction_time">Extraction Time (s):</label>
+        <input type="text" id="extraction_time" name="extraction_time" required><br>
+    
+        <label for="water_temp">Water Temp (°C):</label>
+        <input type="text" id="water_temp" name="water_temp" required><br>
+    
+        <button type="submit">Get Prediction</button>
+    </form>
+
+    <div id="predictionResults"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const uploadCsvButton = document.getElementById("uploadCsv");
+        const uploadForm = document.getElementById("uploadForm");
+        const trainMessage = document.getElementById("trainMessage");
+
+        uploadCsvButton.addEventListener("click", function() {
+            const formData = new FormData(uploadForm);
+
+            fetch("{% url 'train_model' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                trainMessage.textContent = data.message;
+            });
+        });
+
+        const predictButton = document.getElementById("predict");
+        const predictForm = document.getElementById("predictForm");
+        const predictionResults = document.getElementById("predictionResults");
+
+        predictButton.addEventListener("click", function() {
+            const formData = new FormData(predictForm);
+
+            fetch("{% url 'predict' %}", {
+                method: "POST",
+                body: new URLSearchParams(new FormData(predictForm)),
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                predictionResults.innerHTML = `
+                    <h3>Prediction Results</h3>
+                    <p>Yield: ${data.yield} g</p>
+                    <p>Sourness/Bitterness: ${data.sourness_bitterness}</p>
+                    <p>Strength: ${data.strength}</p>
+                `;
+            });
+        });
+    });
+</script>
+{% endblock %}
