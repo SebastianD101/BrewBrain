@@ -92,12 +92,12 @@ def train_model(request):
 
         print(df.columns)
         # Ignore the first column (Date) and ensure the data contains the expected columns
-        expected_columns = {'Dose (g)', 'Grind Size', 'Yield (g)', 'Extraction Time (s)', 'Water Temp', 'Sourness/Bitterness', 'Strength'}
+        expected_columns = {'Grind Size', 'Dose (g)', 'Yield (g)', 'Extraction Time (s)', 'Water Temp', 'Sourness/Bitterness', 'Strength'}
         if not expected_columns.issubset(df.columns):
             return JsonResponse({'message': 'CSV file does not contain the required columns.'})
 
         # Select relevant columns
-        X = df[['Dose (g)', 'Grind Size', 'Extraction Time (s)', 'Water Temp']]
+        X = df[['Grind Size', 'Dose (g)', 'Extraction Time (s)', 'Water Temp']]
         y = df[['Yield (g)', 'Sourness/Bitterness', 'Strength']]
 
         model = MultiOutputRegressor(RandomForestRegressor())

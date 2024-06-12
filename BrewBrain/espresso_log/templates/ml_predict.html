@@ -71,11 +71,11 @@
     <h3>Input Espresso Recipe for Prediction</h3>
     <form id="predictForm" method="post" action="{% url 'predict' %}">
         {% csrf_token %}
-        <label for="dose">Dose (g):</label>
-        <input type="text" id="dose" name="dose" required><br>
-    
         <label for="grind_size">Grind Size:</label>
         <input type="text" id="grind_size" name="grind_size" required><br>
+
+        <label for="dose">Dose (g):</label>
+        <input type="text" id="dose" name="dose" required><br>
     
         <label for="extraction_time">Extraction Time (s):</label>
         <input type="text" id="extraction_time" name="extraction_time" required><br>

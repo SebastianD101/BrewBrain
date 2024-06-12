@@ -175,8 +175,8 @@
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${date}</td>
-                <td>${dose}</td>
                 <td>${grindSize}</td>
+                <td>${dose}</td>
                 <td>${yieldAmt}</td>
                 <td>${extractionTime}</td>
                 <td>${waterTemp}</td>
@@ -245,7 +245,7 @@
                 `Bean Name,${tableTitle.textContent.split(" - ")[0]}`,
                 `Roast,${tableTitle.textContent.split(" - ")[1]}`,
                 ``,
-                `Date,Dose (g),Grind Size,Yield (g),Extraction Time (s),Water Temp,Sourness/Bitterness,Strength`,
+                `Date,Grind Size,Dose (g),Yield (g),Extraction Time (s),Water Temp,Sourness/Bitterness,Strength`,
                 ...Array.from(rows).map(row => 
                     Array.from(row.cells).slice(0, 8).map(cell => cell.textContent).join(",")
                 )
