@@ -78,10 +78,8 @@ def ml_predict(request):
     return render(request, 'ml_predict.html')
 
 def train_model(request):
-    print("test1 " + request.method)
     print("FILES: ", request.FILES)
     if request.method == 'POST' and request.FILES.get('csvFile'):
-        print("test2")
         data = request.FILES['csvFile']
         
         try:
@@ -107,11 +105,16 @@ def train_model(request):
         temp_file = tempfile.NamedTemporaryFile(delete=False)
         joblib.dump(model, temp_file.name)
         request.session['model_path'] = temp_file.name
-        print("test3")
 
         return JsonResponse({'message': 'Model trained successfully!'})
 
     return JsonResponse({'message': 'Invalid request'})
+
+def categorize_value(value, categories):
+    for lower, upper, description in categories:
+        if lower <= value < upper:
+            return description
+    return "Unknown"
 
 def predict(request):
     if request.method == 'POST':
@@ -125,18 +128,39 @@ def predict(request):
                 extraction_time = float(request.POST.get('extraction_time'))
                 water_temp = float(request.POST.get('water_temp'))
             except TypeError as e:
-                return JsonResponse({'message': 'Invalid input. Please provide all required fields: dose, grind_size, extraction_time, water_temp.'}, status=400)
+                return render(request, 'error.html', {
+                    'message': 'Invalid input. Please provide all required fields: dose, grind_size, extraction_time, water_temp.'
+                })
 
             prediction = model.predict([[dose, grind_size, extraction_time, water_temp]])[0]
+
+            sourness_bitterness_categories = [
+                (1, 1.75, 'Very Sour :('),
+                (1.75, 2.5, 'Sour'),
+                (2.5, 3.5, 'Balanced!!'),
+                (3.5, 4.25, 'Bitter'),
+                (4.25, 5.00, 'Very Bitter :(')
+            ]
+
+            strength_categories = [
+                (1, 1.75, 'Very Weak :('),
+                (1.75, 2.5, 'Weak'),
+                (2.5, 3.5, 'Balanced!!'),
+                (3.5, 4.25, 'Strong'),
+                (4.25, 5.00, 'Very Strong :(')
+            ]
+
+            sourness_bitterness_desc = categorize_value(prediction[1], sourness_bitterness_categories)
+            strength_desc = categorize_value(prediction[2], strength_categories)
 
             # Cleanup the temporary model file
             os.remove(model_path)
             del request.session['model_path']
 
-            return JsonResponse({
+            return render(request, 'prediction_results.html', {
                 'yield': prediction[0],
-                'sourness_bitterness': prediction[1],
-                'strength': prediction[2]
+                'sourness_bitterness': sourness_bitterness_desc,
+                'strength': strength_desc
             })
 
-    return JsonResponse({'message': 'Invalid request'}, status=400)
+    return render(request, 'error.html', {'message': 'Invalid request'})

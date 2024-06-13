@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f5f0e1;  /* creamy color */
+    }
+    .table {
+        color: #4b3621;  /* dark coffee brown */
+    }
+    .table-hover tbody tr:hover {
+        background-color: #e4d4b7;  /* light coffee brown */
+    }
+    .btn-coffee {
+        background-color: #4b3621;  /* dark coffee brown */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-coffee:hover {
+        background-color: #5f4536;  /* slightly lighter coffee brown */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-delete {
+        background-color: #d9534f;  /* Bootstrap's danger color */
+        color: #f5f0e1;  /* creamy color */
+    }
+    .btn-delete:hover {
+        background-color: #c9302c;  /* slightly lighter danger color */
+        color: #f5f0e1;  /* creamy color */
+    }
+    @media (max-width: 768px) {
+        .table-responsive {
+            border: 0;
+        }
+        .table thead {
+            display: none; /* Hide the header on small screens */
+        }
+        .table, .table tbody, .table tr, .table td {
+            display: block;
+            width: 100%;
+        }
+        .table tr {
+            margin-bottom: 15px;
+        }
+        .table td {
+            text-align: right;
+            position: relative;
+            padding-left: 50%;
+        }
+        .table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            width: 50%;
+            padding-left: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+</head>
+<body>
+    <h1>Error</h1>
+    <p>{{ message }}</p>
+    <a href="{% url 'ml_predict' %}">Try again</a>
+</body>
+</html>
+{% endblock %}
