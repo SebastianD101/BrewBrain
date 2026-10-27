@@ -1,0 +1,118 @@
+{% extends "espresso_log/base.html" %}
+
+{% block title %}Predict & dial in{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-1">Predict &amp; dial in</h1>
+<p class="text-body-secondary">
+  A random forest trained on your own shots predicts how a recipe will taste, then
+  searches for the grind and shot time it expects to taste most balanced.
+</p>
+
+{% if not_enough_data %}
+  <div class="alert alert-warning">
+    {{ not_enough_data }} <a class="alert-link" href="{% url 'shot_list' %}">Go to the shot log</a>.
+  </div>
+{% else %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Your recipe</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="row g-2">
+            {% for field in form %}
+              <div class="col-6">{% include "espresso_log/_field.html" %}</div>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-coffee w-100 mt-3">Predict</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+      <div class="card-body">
+        <h2 class="h6 card-title">About this model</h2>
+        <p class="small mb-2">Trained on {{ model.n_shots }} shots.</p>
+        {% if model.mean_absolute_error %}
+          <p class="small mb-2">
+            Typical error (5-fold cross-validation):
+            ±{{ model.mean_absolute_error.yield_amount|floatformat:1 }} g yield,
+            ±{{ model.mean_absolute_error.taste|floatformat:1 }} taste,
+            ±{{ model.mean_absolute_error.strength|floatformat:1 }} strength.
+          </p>
+        {% else %}
+          <p class="small text-body-secondary mb-2">Accuracy estimates appear after 10 shots.</p>
+        {% endif %}
+        <p class="small fw-semibold mb-1">What drives your shots</p>
+        {% for label, weight in model.feature_importance %}
+          <div class="d-flex justify-content-between small"><span>{{ label }}</span><span>{% widthratio weight 1 100 %}%</span></div>
+          <div class="progress importance-bar mb-2" role="progressbar" aria-label="{{ label }} importance"
+               aria-valuenow="{% widthratio weight 1 100 %}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" style="width: {% widthratio weight 1 100 %}%"></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    {% if prediction %}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 card-title">Predicted result</h2>
+          <div class="row text-center g-3">
+            <div class="col-4">
+              <div class="stat-value">{{ prediction.yield_amount|floatformat:1 }} g</div>
+              <div class="small text-body-secondary">Yield (1:{{ prediction.brew_ratio|floatformat:1 }})</div>
+            </div>
+            <div class="col-4">
+              <div class="stat-value">{{ prediction.taste_label }}</div>
+              <div class="small text-body-secondary">Taste ({{ prediction.taste|floatformat:1 }} / 5)</div>
+            </div>
+            <div class="col-4">
+              <div class="stat-value">{{ prediction.strength_label }}</div>
+              <div class="small text-body-secondary">Strength ({{ prediction.strength|floatformat:1 }} / 5)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mt-4">
+        <div class="card-body">
+          <h2 class="h5 card-title">Suggested adjustment</h2>
+          <p class="small text-body-secondary">
+            Keeping your {{ suggestion.recipe.dose|floatformat:"-1" }} g dose and
+            {{ suggestion.recipe.water_temperature|floatformat:"-1" }} °C water, the model expects this
+            to be closest to balanced (searching only within grind sizes and times you've brewed):
+          </p>
+          <div class="row text-center g-3">
+            <div class="col-6 col-md-3">
+              <div class="stat-value">{{ suggestion.recipe.grind_size|floatformat:1 }}</div>
+              <div class="small text-body-secondary">Grind (now {{ prediction.recipe.grind_size|floatformat:"-1" }})</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-value">{{ suggestion.recipe.extraction_time|floatformat:0 }} s</div>
+              <div class="small text-body-secondary">Time (now {{ prediction.recipe.extraction_time|floatformat:"-1" }} s)</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-value">{{ suggestion.taste_label }}</div>
+              <div class="small text-body-secondary">Taste</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-value">{{ suggestion.strength_label }}</div>
+              <div class="small text-body-secondary">Strength</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="card card-body text-center text-body-secondary py-5">
+        Enter a recipe to see how the model expects it to taste.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

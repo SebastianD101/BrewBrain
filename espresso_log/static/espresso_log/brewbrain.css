@@ -1,0 +1,80 @@
+:root {
+  --bb-cream: #f5f0e1;
+  --bb-latte: #e4d4b7;
+  --bb-espresso: #4b3621;
+  --bb-espresso-hover: #5f4536;
+}
+
+body {
+  background-color: var(--bb-cream);
+  color: var(--bb-espresso);
+}
+
+.bb-navbar {
+  background-color: var(--bb-espresso);
+}
+
+.card {
+  border-color: var(--bb-latte);
+}
+
+.btn-coffee {
+  --bs-btn-bg: var(--bb-espresso);
+  --bs-btn-border-color: var(--bb-espresso);
+  --bs-btn-color: var(--bb-cream);
+  --bs-btn-hover-bg: var(--bb-espresso-hover);
+  --bs-btn-hover-border-color: var(--bb-espresso-hover);
+  --bs-btn-hover-color: var(--bb-cream);
+  --bs-btn-active-bg: var(--bb-espresso-hover);
+  --bs-btn-active-color: var(--bb-cream);
+}
+
+.table {
+  --bs-table-color: var(--bb-espresso);
+  --bs-table-hover-bg: var(--bb-latte);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.importance-bar {
+  height: 0.5rem;
+  background-color: var(--bb-latte);
+}
+
+.importance-bar .progress-bar {
+  background-color: var(--bb-espresso);
+}
+
+/* Stack table rows as labelled cards on small screens. */
+@media (max-width: 768px) {
+  .table-stack thead {
+    display: none;
+  }
+  .table-stack,
+  .table-stack tbody,
+  .table-stack tr,
+  .table-stack td {
+    display: block;
+    width: 100%;
+  }
+  .table-stack tr {
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--bb-latte);
+  }
+  .table-stack td {
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+  }
+  .table-stack td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+  }
+}
