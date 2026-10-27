@@ -1,0 +1,100 @@
+{% extends "espresso_log/base.html" %}
+
+{% block title %}Shot log{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Log a shot</h2>
+        <form method="post" action="{% url 'shot_list' %}" novalidate>
+          {% csrf_token %}
+          {% for error in form.non_field_errors %}<div class="alert alert-danger py-2">{{ error }}</div>{% endfor %}
+          <div class="row g-2">
+            <div class="col-12">{% include "espresso_log/_field.html" with field=form.brewed_on %}</div>
+            <div class="col-7">{% include "espresso_log/_field.html" with field=form.bean_name %}</div>
+            <div class="col-5">{% include "espresso_log/_field.html" with field=form.roast_level %}</div>
+            <div class="col-6">{% include "espresso_log/_field.html" with field=form.grind_size %}</div>
+            <div class="col-6">{% include "espresso_log/_field.html" with field=form.dose %}</div>
+            <div class="col-6">{% include "espresso_log/_field.html" with field=form.yield_amount %}</div>
+            <div class="col-6">{% include "espresso_log/_field.html" with field=form.extraction_time %}</div>
+            <div class="col-12">{% include "espresso_log/_field.html" with field=form.water_temperature %}</div>
+            <div class="col-6">{% include "espresso_log/_field.html" with field=form.taste %}</div>
+            <div class="col-6">{% include "espresso_log/_field.html" with field=form.strength %}</div>
+            <div class="col-12">{% include "espresso_log/_field.html" with field=form.notes %}</div>
+          </div>
+          <button type="submit" class="btn btn-coffee w-100 mt-3">Add shot</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+      <div class="card-body">
+        <h2 class="h5 card-title">Import from CSV</h2>
+        <form method="post" action="{% url 'shots_import' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ import_form.file }}
+          <div class="form-text">Accepts BrewBrain exports, including the original format.</div>
+          <button type="submit" class="btn btn-outline-dark w-100 mt-2">Import</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h1 class="h3 mb-0">Espresso shots <span class="text-body-secondary fs-6">({{ shots|length }})</span></h1>
+      {% if shots %}<a class="btn btn-coffee btn-sm" href="{% url 'shots_export' %}">Export CSV</a>{% endif %}
+    </div>
+
+    {% if shots %}
+      {% if shots|length < min_shots %}
+        <p class="text-body-secondary">Log {{ min_shots }} or more shots to unlock predictions.</p>
+      {% endif %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-stack">
+          <thead>
+            <tr>
+              <th>Date</th><th>Bean</th><th class="text-end">Grind</th><th class="text-end">Dose</th>
+              <th class="text-end">Yield</th><th class="text-end">Ratio</th><th class="text-end">Time</th>
+              <th class="text-end">Temp</th><th>Taste</th><th>Strength</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for shot in shots %}
+              <tr>
+                <td data-label="Date">{{ shot.brewed_on|date:"M j, Y" }}</td>
+                <td data-label="Bean">
+                  {{ shot.bean_name|default:"—" }}
+                  {% if shot.roast_level %}<div class="small text-body-secondary">{{ shot.roast_level }}</div>{% endif %}
+                </td>
+                <td data-label="Grind" class="text-end">{{ shot.grind_size|floatformat:"-1" }}</td>
+                <td data-label="Dose" class="text-end">{{ shot.dose|floatformat:"-1" }} g</td>
+                <td data-label="Yield" class="text-end">{{ shot.yield_amount|floatformat:"-1" }} g</td>
+                <td data-label="Ratio" class="text-end">1:{{ shot.brew_ratio|floatformat:1 }}</td>
+                <td data-label="Time" class="text-end">{{ shot.extraction_time|floatformat:"-1" }} s</td>
+                <td data-label="Temp" class="text-end">{{ shot.water_temperature|floatformat:"-1" }} °C</td>
+                <td data-label="Taste">{{ shot.get_taste_display }}</td>
+                <td data-label="Strength">{{ shot.get_strength_display }}</td>
+                <td class="text-end">
+                  <form method="post" action="{% url 'shot_delete' shot.pk %}"
+                        onsubmit="return confirm('Delete this shot?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="card card-body text-center text-body-secondary py-5">
+        <p class="mb-1">No shots yet.</p>
+        <p class="mb-0 small">Log your first shot, or import a CSV, to get started.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
